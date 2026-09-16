@@ -27,7 +27,7 @@ export const Footer = () => {
           </p>
         </div>
 
-        //ნავიგაცია
+        {/* ნავიგაცია */}
         <div className="space-y-3">
           <h4 className="text-xs font-mono uppercase tracking-widest text-amber-500 font-bold">
             {lang === 'ka' ? 'ნავიგაცია' : 'Navigation'}
@@ -40,7 +40,7 @@ export const Footer = () => {
           </ul>
         </div>
 
-        //საკონტაქტო ინფო
+        {/* საკონტაქტო ინფო */}
         <div className="space-y-3">
           <h4 className="text-xs font-mono uppercase tracking-widest text-amber-500 font-bold">
             {lang === 'ka' ? 'საკონტაქტო' : 'Contact Info'}
@@ -71,7 +71,7 @@ export const Footer = () => {
           </ul>
         </div>
 
-        //სოციალური ქსელები
+        {/* სოციალური ქსელები */}
         <div className="space-y-3">
           <h4 className="text-xs font-mono uppercase tracking-widest text-amber-500 font-bold">
             {lang === 'ka' ? 'სოციალური ქსელები' : 'Social Networks'}
