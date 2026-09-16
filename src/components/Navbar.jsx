@@ -14,7 +14,7 @@ export const Navbar = () => {
   const { lang, toggleLanguage } = useLanguage();
   const { user } = useAuth();
   
-  // Header-ის DOM ელემენტის REF
+  
   const headerRef = useRef(null);
 
   const navLinks = [
@@ -24,7 +24,7 @@ export const Navbar = () => {
     { name: lang === 'ka' ? 'კონტაქტი' : 'Contact', path: '/contact' },
   ];
 
-  // Outside Click Event Listener: მენიუს გარეთ დაწკაპუნებისას დახურვა
+  //  მენიუს გარეთ დაწკაპუნებისას დახურვა
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (headerRef.current && !headerRef.current.contains(event.target)) {
@@ -63,7 +63,7 @@ export const Navbar = () => {
           {/* ლოგო */}
           <Link to="/" className="flex items-center gap-3.5 group shrink-0">
             <div className="relative w-9 h-9 border border-amber-500/80 flex items-center justify-center transition-all duration-300 group-hover:border-amber-400 group-hover:shadow-[0_0_15px_rgba(245,158,11,0.2)]">
-              <div className="absolute w-full h-[1px] bg-amber-500 transform -rotate-45 transition-transform duration-300 group-hover:scale-110" />
+              <div className="absolute w-full h-px bg-amber-500 transform -rotate-45 transition-transform duration-300 group-hover:scale-110" />
               <span className={`text-xs font-black tracking-tighter z-10 transition-colors ${
                 isDark ? 'text-neutral-100 group-hover:text-amber-400' : 'text-neutral-900 group-hover:text-amber-600'
               }`}>

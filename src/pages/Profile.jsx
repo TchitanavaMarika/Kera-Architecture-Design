@@ -22,7 +22,7 @@ export const Profile = () => {
       isDark ? 'text-white' : 'text-neutral-900'
     }`}>
       
-      {/* იუზერის პროფილის ბარათი */}
+      {/* მომხმარებლის პროფილი */}
       <div className={`p-8 sm:p-10 rounded-lg border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-16 ${
         isDark ? 'bg-neutral-900/60 border-neutral-800' : 'bg-white border-neutral-200 shadow-md'
       }`}>
@@ -77,7 +77,7 @@ export const Profile = () => {
                   alt={project.title?.[lang] || ''}
                   className="absolute inset-0 w-full h-full object-cover brightness-[0.7]"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-90" />
+                <div className="absolute inset-0 bg-gradient-to- from-black via-black/20 to-transparent opacity-90" />
 
                 <button
                   onClick={() => toggleFavorite(project.id)}
