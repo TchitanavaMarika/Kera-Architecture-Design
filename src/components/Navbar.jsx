@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Sun, Moon, Globe, User, Heart } from 'lucide-react';
+import { Menu, X, Sun, Moon, Globe, User } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
@@ -13,6 +13,9 @@ export const Navbar = () => {
   const { isDark, toggleTheme } = useTheme();
   const { lang, toggleLanguage } = useLanguage();
   const { user } = useAuth();
+  
+  // Header-ის DOM ელემენტის REF
+  const headerRef = useRef(null);
 
   const navLinks = [
     { name: lang === 'ka' ? 'მთავარი' : 'Home', path: '/' },
@@ -21,19 +24,46 @@ export const Navbar = () => {
     { name: lang === 'ka' ? 'კონტაქტი' : 'Contact', path: '/contact' },
   ];
 
+  // Outside Click Event Listener: მენიუს გარეთ დაწკაპუნებისას დახურვა
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (headerRef.current && !headerRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('touchstart', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, [isOpen]);
+
+  // გვერდის შეცვლისას მენიუს ავტომატური დახურვა
+  useEffect(() => {
+    setIsOpen(false);
+  }, [location.pathname]);
+
   return (
     <>
-     <header className={`sticky top-0 z-40 backdrop-blur-md transform-gpu border-b transition-colors duration-300 ${
-  isDark 
-    ? 'bg-neutral-950/90 border-neutral-800 text-white' 
-    : 'bg-white/90 border-neutral-200 text-neutral-900 shadow-sm'
-}`}>
+      <header 
+        ref={headerRef}
+        className={`sticky top-0 z-50 backdrop-blur-md transform-gpu border-b transition-colors duration-300 ${
+          isDark 
+            ? 'bg-neutral-950/90 border-neutral-800 text-white' 
+            : 'bg-white/90 border-neutral-200 text-neutral-900 shadow-sm'
+        }`}
+      >
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           
           {/* ლოგო */}
-          <Link to="/" className="flex items-center gap-3.5 group">
+          <Link to="/" className="flex items-center gap-3.5 group shrink-0">
             <div className="relative w-9 h-9 border border-amber-500/80 flex items-center justify-center transition-all duration-300 group-hover:border-amber-400 group-hover:shadow-[0_0_15px_rgba(245,158,11,0.2)]">
-              <div className="absolute w-full h-px bg-amber-500 transform -rotate-45 transition-transform duration-300 group-hover:scale-110" />
+              <div className="absolute w-full h-[1px] bg-amber-500 transform -rotate-45 transition-transform duration-300 group-hover:scale-110" />
               <span className={`text-xs font-black tracking-tighter z-10 transition-colors ${
                 isDark ? 'text-neutral-100 group-hover:text-amber-400' : 'text-neutral-900 group-hover:text-amber-600'
               }`}>
@@ -81,7 +111,6 @@ export const Navbar = () => {
             </nav>
 
             <div className="flex items-center gap-3 border-l border-neutral-800 pl-6">
-              {/* ენის გადამრთველი */}
               <button
                 onClick={toggleLanguage}
                 className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono rounded border transition-all ${
@@ -92,7 +121,6 @@ export const Navbar = () => {
                 <span>{lang === 'ka' ? 'EN' : 'GE'}</span>
               </button>
 
-              {/* Dark / Light Toggle */}
               <button
                 onClick={toggleTheme}
                 className={`p-2 rounded-full border transition-all ${
@@ -102,11 +130,10 @@ export const Navbar = () => {
                 {isDark ? <Sun size={18} /> : <Moon size={18} />}
               </button>
 
-              {/* Auth / Profile Button */}
               {user ? (
                 <Link
                   to="/profile"
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-amber-500 bg-amber-500/10 text-amber-400 text-xs font-mono font-bold hover:bg-amber-500 hover:text-black transition-all"
+                  className="flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-amber-500 bg-amber-500/10 text-amber-400 text-xs font-mono font-bold hover:bg-amber-500 hover:text-black transition-all"
                 >
                   <User size={14} />
                   <span>{user.name ? user.name.split(' ')[0] : 'User'}</span>
@@ -123,28 +150,87 @@ export const Navbar = () => {
             </div>
           </div>
 
-          {/* მობილური მენიუ */}
-          <div className="flex items-center gap-3 md:hidden">
-            {user ? (
-              <Link to="/profile" className="p-2 rounded-full border border-amber-500 text-amber-500">
-                <User size={18} />
-              </Link>
-            ) : (
-              <button onClick={() => setIsAuthOpen(true)} className="p-2 rounded-full border border-amber-500/40 text-amber-500">
-                <User size={18} />
-              </button>
-            )}
-            <button onClick={toggleLanguage} className={`px-2 py-1 text-xs font-mono rounded border ${isDark ? 'border-neutral-800 text-amber-400' : 'border-neutral-300 text-neutral-700'}`}>
-              {lang === 'ka' ? 'EN' : 'GE'}
-            </button>
-            <button onClick={toggleTheme} className={`p-2 rounded-full border ${isDark ? 'border-neutral-800 text-amber-400' : 'border-neutral-300 text-neutral-700'}`}>
-              {isDark ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
-            <button onClick={() => setIsOpen(!isOpen)} className={isDark ? 'text-neutral-400' : 'text-neutral-700'}>
-              {isOpen ? <X size={24} /> : <Menu size={24} />}
+          {/* მობილური ჰედერი */}
+          <div className="flex items-center md:hidden">
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className={`p-2 rounded border transition-colors ${
+                isDark ? 'border-neutral-800 text-neutral-300' : 'border-neutral-300 text-neutral-700'
+              }`}
+              aria-label="Toggle Menu"
+            >
+              {isOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
           </div>
         </div>
+
+        {/* მობილური ჩამოშლადი მენიუ */}
+        {isOpen && (
+          <div className={`md:hidden border-b px-6 py-6 space-y-6 animate-fade-in ${
+            isDark ? 'bg-neutral-950 border-neutral-800' : 'bg-white border-neutral-200 shadow-xl'
+          }`}>
+            <nav className="space-y-4">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  onClick={() => setIsOpen(false)}
+                  className={`block text-xs uppercase tracking-widest font-mono ${
+                    location.pathname === link.path 
+                      ? 'text-amber-500 font-bold' 
+                      : isDark ? 'text-neutral-400 hover:text-amber-400' : 'text-neutral-600 hover:text-amber-600'
+                  }`}
+                >
+                  {link.name}
+                </Link>
+              ))}
+            </nav>
+
+            <div className="pt-4 border-t border-neutral-800/60 flex items-center justify-between">
+              {user ? (
+                <Link
+                  to="/profile"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded border border-amber-500 text-amber-400 text-xs font-mono font-bold"
+                >
+                  <User size={14} />
+                  <span>{user.name ? user.name.split(' ')[0] : 'Profile'}</span>
+                </Link>
+              ) : (
+                <button
+                  onClick={() => {
+                    setIsOpen(false);
+                    setIsAuthOpen(true);
+                  }}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded border border-amber-500/50 text-amber-500 text-xs font-mono"
+                >
+                  <User size={14} />
+                  <span>{lang === 'ka' ? 'შესვლა' : 'Login'}</span>
+                </button>
+              )}
+
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={toggleLanguage}
+                  className={`px-3 py-1.5 text-xs font-mono rounded border ${
+                    isDark ? 'border-neutral-800 text-amber-400' : 'border-neutral-300 text-neutral-700'
+                  }`}
+                >
+                  {lang === 'ka' ? 'EN' : 'GE'}
+                </button>
+
+                <button
+                  onClick={toggleTheme}
+                  className={`p-2 rounded-full border ${
+                    isDark ? 'border-neutral-800 text-amber-400' : 'border-neutral-300 text-neutral-700'
+                  }`}
+                >
+                  {isDark ? <Sun size={16} /> : <Moon size={16} />}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </header>
 
       <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />

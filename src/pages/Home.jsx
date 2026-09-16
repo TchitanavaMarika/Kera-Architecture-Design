@@ -1,4 +1,3 @@
-// src/pages/Home.jsx
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, ChevronLeft, ChevronRight, Building2, ShieldCheck, Sparkles, Compass, Lightbulb, Layers, Award } from 'lucide-react';
@@ -105,13 +104,12 @@ export const Home = () => {
       <section className="relative h-[85vh] md:h-[90vh] overflow-hidden bg-black">
         {currentProject && (
           <div className="absolute inset-0 transition-all duration-700 ease-in-out">
-            {/* Home.jsx - მთავარი სლაიდი */}
-<img
-  src={currentProject.image}
-  alt={currentProject.title?.[lang] || ''}
-  className="w-full h-full object-cover brightness-[0.55] transition-transform duration-700 will-change-transform transform-gpu"
-/>
-            <div className="absolute inset-0 bg-gradient-to- from-black via-black/20 to-transparent" />
+            <img
+              src={currentProject.image}
+              alt={currentProject.title?.[lang] || ''}
+              className="w-full h-full object-cover brightness-[0.55] transition-transform duration-700 will-change-transform transform-gpu"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
             
             <div className="absolute bottom-32 md:bottom-36 left-6 right-6 md:left-16 md:right-auto md:max-w-2xl space-y-4 z-10">
               <span className="inline-block text-amber-400 uppercase tracking-[0.2em] text-[11px] font-mono bg-black/60 px-3.5 py-1.5 rounded-sm border border-amber-500/30 backdrop-blur-md">
@@ -125,7 +123,7 @@ export const Home = () => {
               </p>
               <div className="pt-2">
                 <Link
-                  to="/portfolio"
+                  to={`/portfolio?id=${currentProject.id}`}
                   className="inline-flex items-center gap-3 bg-amber-500 hover:bg-amber-400 text-black font-bold px-7 py-3.5 text-xs uppercase tracking-[0.15em] transition-all rounded-sm shadow-xl shadow-amber-500/10 hover:gap-4"
                 >
                   {t.viewProject} <ArrowRight size={16} />
@@ -247,9 +245,10 @@ export const Home = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {featuredProjects.map((proj) => (
-              <div
+              <Link
                 key={proj.id}
-                className={`group rounded-lg overflow-hidden border transition-all duration-300 hover:-translate-y-2 ${
+                to={`/portfolio?id=${proj.id}`}
+                className={`group rounded-lg overflow-hidden border transition-all duration-300 hover:-translate-y-2 block ${
                   isDark ? 'bg-neutral-900 border-neutral-800' : 'bg-white border-neutral-200 shadow-md'
                 }`}
               >
@@ -275,13 +274,13 @@ export const Home = () => {
                     <span>{proj.area}</span>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
       </section>
 
-      {/* 5.სამუშაო პროცესი */}
+      {/* 5. სამუშაო პროცესი */}
       <section className="py-28 px-6 max-w-7xl mx-auto space-y-16">
         <div className="text-center max-w-2xl mx-auto space-y-3">
           <span className="text-amber-500 text-xs font-mono uppercase tracking-[0.2em]">{t.workflowTitle}</span>
@@ -307,7 +306,7 @@ export const Home = () => {
         </div>
       </section>
 
-      {/* 6. STATS & NUMBERS SECTION */}
+      {/* 6. სტატისტიკა */}
       <section className={`py-24 px-6 border-t ${isDark ? 'border-neutral-900 bg-neutral-900/20' : 'border-neutral-200 bg-neutral-100/30'}`}>
         <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
           <div className="space-y-2">

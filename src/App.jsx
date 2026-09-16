@@ -1,5 +1,5 @@
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { Home } from './pages/Home';
@@ -9,6 +9,17 @@ import { Contact } from './pages/Contact';
 import { Profile } from './pages/Profile';
 import { useTheme } from './context/ThemeContext';
 
+// კომპონენტი, რომელიც ყოველ გვერდის ცვლილებაზე სქროლავს თავში
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+};
+
 export const App = () => {
   const { isDark } = useTheme();
 
@@ -16,6 +27,7 @@ export const App = () => {
     <div className={`min-h-screen font-sans antialiased flex flex-col justify-between transition-colors duration-300 ${
       isDark ? 'bg-neutral-950 text-white' : 'bg-neutral-50 text-neutral-900'
     }`}>
+      <ScrollToTop />
       <div>
         <Navbar />
         <main>
