@@ -3,7 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, ChevronLeft, ChevronRight, Building2, ShieldCheck, Sparkles, Compass, Lightbulb, Layers, Award } from 'lucide-react';
 import { fetchProjects } from '../data/projects';
-import { useTheme, useLanguage } from '../App';
+import { useTheme } from '../context/ThemeContext';
+import { useLanguage } from '../context/LanguageContext';
 
 export const Home = () => {
   const [projects, setProjects] = useState([]);
@@ -100,16 +101,17 @@ export const Home = () => {
       isDark ? 'bg-neutral-950 text-white' : 'bg-neutral-50 text-neutral-900'
     }`}>
       
-      {/* 1. HERO SLIDER (Figma Desktop-Home) */}
+      {/* 1. მთავარი სლაიდერი */}
       <section className="relative h-[85vh] md:h-[90vh] overflow-hidden bg-black">
         {currentProject && (
           <div className="absolute inset-0 transition-all duration-700 ease-in-out">
-            <img
-              src={currentProject.image}
-              alt={currentProject.title?.[lang] || ''}
-              className="w-full h-full object-cover brightness-[0.55] transition-transform duration-1000 scale-105"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
+            {/* Home.jsx - მთავარი სლაიდი */}
+<img
+  src={currentProject.image}
+  alt={currentProject.title?.[lang] || ''}
+  className="w-full h-full object-cover brightness-[0.55] transition-transform duration-700 will-change-transform transform-gpu"
+/>
+            <div className="absolute inset-0 bg-gradient-to- from-black via-black/20 to-transparent" />
             
             <div className="absolute bottom-32 md:bottom-36 left-6 right-6 md:left-16 md:right-auto md:max-w-2xl space-y-4 z-10">
               <span className="inline-block text-amber-400 uppercase tracking-[0.2em] text-[11px] font-mono bg-black/60 px-3.5 py-1.5 rounded-sm border border-amber-500/30 backdrop-blur-md">
@@ -156,7 +158,7 @@ export const Home = () => {
                       {proj.title?.[lang] || ''}
                     </span>
                   </div>
-                  <div className={`h-[2px] transition-all duration-300 ${
+                  <div className={`h-0.5 transition-all duration-300 ${
                     isActive ? 'w-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.6)]' : 'w-8 bg-neutral-700 group-hover:bg-neutral-500'
                   }`} />
                 </button>
@@ -184,7 +186,7 @@ export const Home = () => {
         </div>
       </section>
 
-      {/* 2. WELCOME HERO TEXT SECTION */}
+      {/* 2. მთავარი ბანერის ტექსტი */}
       <section className="py-28 px-6 max-w-7xl mx-auto text-center space-y-6">
         <span className="text-amber-500 text-xs font-mono uppercase tracking-[0.25em]">
           {t.welcomeTitle}
@@ -199,7 +201,7 @@ export const Home = () => {
         </p>
       </section>
 
-      {/* 3. LARGE STUDIO BANNER (Figma Style Image + Content Overlay) */}
+      {/* 3. დიდი ბანერი */}
       <section className="py-12 px-6 max-w-7xl mx-auto">
         <div className="relative rounded-xl overflow-hidden border border-neutral-800 shadow-2xl min-h-[460px] flex items-center">
           <img
@@ -225,7 +227,7 @@ export const Home = () => {
         </div>
       </section>
 
-      {/* 4. FEATURED PROJECTS GRID (Figma 3 ბარათის ბადე) */}
+      {/* 4. ბარათების ბადე */}
       <section className={`py-28 px-6 border-t mt-12 ${
         isDark ? 'border-neutral-900 bg-neutral-900/30' : 'border-neutral-200 bg-neutral-100/50'
       }`}>
@@ -279,7 +281,7 @@ export const Home = () => {
         </div>
       </section>
 
-      {/* 5. WORKFLOW / PROCESS SECTION */}
+      {/* 5.სამუშაო პროცესი */}
       <section className="py-28 px-6 max-w-7xl mx-auto space-y-16">
         <div className="text-center max-w-2xl mx-auto space-y-3">
           <span className="text-amber-500 text-xs font-mono uppercase tracking-[0.2em]">{t.workflowTitle}</span>

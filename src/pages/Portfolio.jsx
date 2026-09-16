@@ -1,8 +1,9 @@
-// src/pages/Portfolio.jsx
 import React, { useState, useEffect } from 'react';
 import { fetchProjects } from '../data/projects';
-import { useTheme, useLanguage } from '../App';
-import { Layers, X, CheckCircle2, Calendar, MapPin, ArrowUpRight } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
+import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
+import { Layers, X, CheckCircle2, Calendar, MapPin, ArrowUpRight, Heart } from 'lucide-react';
 
 export const Portfolio = () => {
   const [projects, setProjects] = useState([]);
@@ -10,6 +11,7 @@ export const Portfolio = () => {
   const [selectedProject, setSelectedProject] = useState(null);
   const { isDark } = useTheme();
   const { lang } = useLanguage();
+  const { favorites, toggleFavorite, user } = useAuth();
 
   useEffect(() => {
     fetchProjects().then((data) => setProjects(data || []));
@@ -63,7 +65,7 @@ export const Portfolio = () => {
       isDark ? 'text-white' : 'text-neutral-900'
     }`}>
       
-      {/* HEADER SECTION */}
+      {/* სათაური */}
       <div className="space-y-4 mb-16 text-center max-w-3xl mx-auto">
         <span className="text-amber-500 text-xs font-mono uppercase tracking-[0.25em]">
           {t.subtitle}
@@ -78,7 +80,7 @@ export const Portfolio = () => {
         </p>
       </div>
 
-      {/* CATEGORY FILTER TABS */}
+      {/* კატეგორიები და ფილტრი */}
       <div className="flex flex-wrap items-center justify-center gap-3 mb-16">
         {[
           { id: 'all', label: t.all },
@@ -102,57 +104,74 @@ export const Portfolio = () => {
         ))}
       </div>
 
-      {/* FIGMA STYLE PORTFOLIO GRID */}
+      {/* პორტფოლიო გრიდი */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {filteredProjects.map((project) => (
-          <div
-            key={project.id}
-            onClick={() => setSelectedProject(project)}
-            className="group relative h-[480px] sm:h-[520px] rounded-lg overflow-hidden cursor-pointer border border-neutral-800/60 shadow-xl transition-all duration-500 hover:-translate-y-2"
-          >
-            <img
-              src={project.image}
-              alt={project.title?.[lang] || ''}
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 brightness-[0.75] group-hover:brightness-[0.45]"
-            />
+        {filteredProjects.map((project) => {
+          const isFav = favorites.includes(project.id);
+          return (
+            <div
+              key={project.id}
+              className="group relative h-120 sm:h-130 rounded-lg overflow-hidden border border-neutral-800/60 shadow-xl transition-all duration-500 hover:-translate-y-2"
+            >
+              <img
+                src={project.image}
+                alt={project.title?.[lang] || ''}
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 brightness-[0.75] group-hover:brightness-[0.45]"
+              />
 
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent opacity-90 transition-opacity group-hover:opacity-95" />
+              <div className="absolute inset-0 bg-gradient-to- from-black via-black/30 to-transparent opacity-90 transition-opacity group-hover:opacity-95" />
 
-            <div className="absolute top-6 left-6 z-10">
-              <span className="text-[10px] font-mono tracking-widest uppercase bg-black/60 backdrop-blur-md text-amber-400 px-3 py-1.5 rounded-sm border border-amber-500/30">
-                {categoryLabels[project.category] || project.category}
-              </span>
-            </div>
-
-            <div className="absolute top-6 right-6 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-amber-500 text-black p-2 rounded-full">
-              <ArrowUpRight size={18} />
-            </div>
-
-            <div className="absolute bottom-0 left-0 right-0 p-8 z-10 space-y-3 transition-transform duration-300">
-              <span className="text-neutral-400 text-xs font-mono tracking-wider block">
-                {project.year} • {project.location?.[lang] || ''}
-              </span>
-
-              <h3 className="text-2xl font-black text-white leading-tight group-hover:text-amber-400 transition-colors">
-                {project.title?.[lang] || ''}
-              </h3>
-
-              <p className="text-neutral-300 text-xs font-light line-clamp-2 leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity">
-                {project.description?.[lang] || ''}
-              </p>
-
-              <div className="pt-3 flex items-center justify-between text-[11px] font-mono text-amber-500 font-semibold border-t border-white/10 mt-2">
-                <span>{project.area}</span>
-                <span className="inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                  {t.viewDetails} &rarr;
+              <div className="absolute top-6 left-6 z-10 flex items-center gap-2">
+                <span className="text-[10px] font-mono tracking-widest uppercase bg-black/60 backdrop-blur-md text-amber-400 px-3 py-1.5 rounded-sm border border-amber-500/30">
+                  {categoryLabels[project.category] || project.category}
                 </span>
               </div>
+
+              {/* რჩეულებში დამატება */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleFavorite(project.id);
+                }}
+                className={`absolute top-6 right-6 z-20 p-2.5 rounded-full backdrop-blur-md border transition-all ${
+                  isFav 
+                    ? 'bg-amber-500 border-amber-500 text-black' 
+                    : 'bg-black/60 border-amber-500/30 text-amber-500 hover:bg-amber-500 hover:text-black'
+                }`}
+                title="Favorite"
+              >
+                <Heart size={16} className={isFav ? 'fill-black' : ''} />
+              </button>
+
+              <div 
+                onClick={() => setSelectedProject(project)}
+                className="absolute bottom-0 left-0 right-0 p-8 z-10 space-y-3 cursor-pointer"
+              >
+                <span className="text-neutral-400 text-xs font-mono tracking-wider block">
+                  {project.year} • {project.location?.[lang] || ''}
+                </span>
+
+                <h3 className="text-2xl font-black text-white leading-tight group-hover:text-amber-400 transition-colors">
+                  {project.title?.[lang] || ''}
+                </h3>
+
+                <p className="text-neutral-300 text-xs font-light line-clamp-2 leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity">
+                  {project.description?.[lang] || ''}
+                </p>
+
+                <div className="pt-3 flex items-center justify-between text-[11px] font-mono text-amber-500 font-semibold border-t border-white/10 mt-2">
+                  <span>{project.area}</span>
+                  <span className="inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                    {t.viewDetails} &rarr;
+                  </span>
+                </div>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
-      {/* MODAL DETAIL */}
+      {/* მოდალის დეტალები */}
       {selectedProject && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fade-in">
           <div className={`relative w-full max-w-4xl rounded-lg overflow-hidden border shadow-2xl max-h-[92vh] overflow-y-auto ${

@@ -1,6 +1,7 @@
-// src/pages/About.jsx
-import React from 'react';
-import { useTheme, useLanguage } from '../App';
+
+
+import { useTheme } from '../context/ThemeContext'; 
+ import { useLanguage } from '../context/LanguageContext';
 import { Building2, Compass, Home as HomeIcon, Layers, ShieldCheck, Sparkles, CheckCircle2 } from 'lucide-react';
 
 export const About = () => {
@@ -81,7 +82,7 @@ export const About = () => {
       isDark ? 'text-white' : 'text-neutral-900'
     }`}>
       
-      {/* 1. HERO BANNER & TEXT SECTION */}
+      {/* 1. მთავარი ბანერი და ტექსტი */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-28">
         <div className="space-y-6">
           <span className="text-amber-500 text-xs font-mono uppercase tracking-[0.25em]">
@@ -122,7 +123,7 @@ export const About = () => {
         </div>
       </div>
 
-      {/* 2. DETAILED SERVICES & DIRECTIONS (ჩაშლილი მიმართულებები) */}
+      {/* 2. დეტალური სერვისები და მიმართულებები */}
       <div className="mb-28 space-y-16">
         <div className="text-center max-w-2xl mx-auto space-y-3">
           <span className="text-amber-500 text-xs font-mono uppercase tracking-[0.2em]">
@@ -188,7 +189,7 @@ export const About = () => {
         </div>
       </div>
 
-      {/* 3. HERITAGE & PRINCIPLES BANNER */}
+      {/* 3. პრინციპები და მიმართულებები */}
       <div className={`p-10 sm:p-14 rounded-lg border grid grid-cols-1 lg:grid-cols-3 gap-8 items-center ${
         isDark ? 'bg-neutral-900/40 border-neutral-800' : 'bg-neutral-100 border-neutral-200'
       }`}>

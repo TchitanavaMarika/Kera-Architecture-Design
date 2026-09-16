@@ -1,22 +1,38 @@
-// src/pages/Contact.jsx
 import React, { useState } from 'react';
-import { useTheme, useLanguage } from '../App';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useTheme } from '../context/ThemeContext';
+import { useLanguage } from '../context/LanguageContext';
+import { getContactSchema } from '../schemas/contactSchema';
 import { Mail, Phone, MapPin, Send, CheckCircle2, Clock, Globe } from 'lucide-react';
 
 export const Contact = () => {
   const { isDark } = useTheme();
   const { lang } = useLanguage();
 
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    service: 'architecture',
-    area: '',
-    message: ''
-  });
-
   const [submitted, setSubmitted] = useState(false);
   const [savedData, setSavedData] = useState(null);
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting }
+  } = useForm({
+    resolver: yupResolver(getContactSchema(lang)),
+    defaultValues: {
+      name: '',
+      email: '',
+      service: 'architecture',
+      area: '',
+      message: ''
+    }
+  });
+
+  const onSubmit = (data) => {
+    setSavedData(data);
+    setSubmitted(true);
+  };
 
   const texts = {
     ka: {
@@ -47,7 +63,6 @@ export const Contact = () => {
       successTitle: "მოთხოვნა წარმატებით გაიგზავნა!",
       successDesc: "მადლობა დაინტერესებისთვის. ჩვენი წარმომადგენელი უმოკლეს დროში დაგიკავშირდებათ.",
       sendNew: "ახალი მოთხოვნის შეყვანა",
-      requiredError: "გთხოვთ შეავსოთ ეს ველი.",
       previewTitle: "მიღებული შეკვეთის მონაცემები (სისტემის ლოგი):"
     },
     en: {
@@ -78,27 +93,18 @@ export const Contact = () => {
       successTitle: "Request Sent Successfully!",
       successDesc: "Thank you for your interest. Our representative will contact you shortly.",
       sendNew: "Send Another Request",
-      requiredError: "Please fill out this field.",
       previewTitle: "Received Order Data (System Log):"
     }
   };
 
   const t = texts[lang] || texts.ka;
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!formData.name || !formData.email) return;
-
-    setSavedData(formData);
-    setSubmitted(true);
-  };
-
   return (
     <div className={`min-h-screen py-16 px-6 max-w-7xl mx-auto transition-colors duration-300 ${
       isDark ? 'text-white' : 'text-neutral-900'
     }`}>
       
-      {/* 1. HERO SECTION (Figma Desktop - Contact Style) */}
+      {/* 1. მთავარი ბანერი */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-24">
         <div className="space-y-6">
           <span className="text-amber-500 text-xs font-mono uppercase tracking-[0.25em]">
@@ -122,14 +128,13 @@ export const Contact = () => {
         </div>
       </div>
 
-      {/* 2. CONTACT DETAILS GRID (Figma Style) */}
+      {/* 2. კონტაქტის დეტალები */}
       <div className="mb-24 space-y-8">
         <h2 className="text-xs font-mono uppercase tracking-[0.2em] text-amber-500 font-bold">
           {t.contactDetailsTitle}
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* თბილისის ოფისი */}
           <div className={`p-8 rounded-lg border space-y-4 ${
             isDark ? 'bg-neutral-900/50 border-neutral-800' : 'bg-white border-neutral-200 shadow-sm'
           }`}>
@@ -143,7 +148,6 @@ export const Contact = () => {
             </div>
           </div>
 
-          {/* ზუგდიდის ოფისი */}
           <div className={`p-8 rounded-lg border space-y-4 ${
             isDark ? 'bg-neutral-900/50 border-neutral-800' : 'bg-white border-neutral-200 shadow-sm'
           }`}>
@@ -157,7 +161,6 @@ export const Contact = () => {
             </div>
           </div>
 
-          {/* სამუშაო საათები & ელ-ფოსტა */}
           <div className={`p-8 rounded-lg border space-y-4 ${
             isDark ? 'bg-neutral-900/50 border-neutral-800' : 'bg-white border-neutral-200 shadow-sm'
           }`}>
@@ -173,7 +176,7 @@ export const Contact = () => {
         </div>
       </div>
 
-      {/* 3. VISUAL MAP BANNER */}
+      {/* 3. რუკა */}
       <div className="mb-24 rounded-lg overflow-hidden border border-neutral-800 relative h-72 sm:h-80">
         <img
           src="https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&w=1200&q=80"
@@ -189,7 +192,7 @@ export const Contact = () => {
         </div>
       </div>
 
-      {/* 4. FORM SECTION (Connect With Us) */}
+      {/* 4. ფორმა */}
       <div className="max-w-4xl mx-auto space-y-8">
         <div className="text-center space-y-2">
           <span className="text-amber-500 text-xs font-mono uppercase tracking-widest font-bold">CONNECT WITH US</span>
@@ -226,7 +229,7 @@ export const Contact = () => {
                 onClick={() => {
                   setSubmitted(false);
                   setSavedData(null);
-                  setFormData({ name: '', email: '', service: 'architecture', area: '', message: '' });
+                  reset();
                 }}
                 className="mt-4 px-6 py-3 bg-amber-500 text-black font-bold text-xs uppercase tracking-widest rounded-sm hover:bg-amber-400 transition-all"
               >
@@ -234,57 +237,62 @@ export const Contact = () => {
               </button>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                
+                {/* სახელი */}
                 <div className="space-y-2">
                   <label className="text-xs font-mono uppercase tracking-wider text-neutral-400">
                     {t.nameLabel}
                   </label>
                   <input
                     type="text"
-                    required
-                    value={formData.name}
+                    {...register('name')}
                     placeholder={t.namePlaceholder}
-                    onInvalid={(e) => e.target.setCustomValidity(t.requiredError)}
-                    onInput={(e) => e.target.setCustomValidity('')}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     className={`w-full px-4 py-3 rounded-sm border text-sm outline-none transition-colors ${
-                      isDark 
-                        ? 'bg-neutral-950 border-neutral-800 focus:border-amber-500 text-white' 
-                        : 'bg-neutral-50 border-neutral-300 focus:border-amber-500 text-black'
+                      errors.name 
+                        ? 'border-red-500 focus:border-red-500' 
+                        : isDark 
+                          ? 'bg-neutral-950 border-neutral-800 focus:border-amber-500 text-white' 
+                          : 'bg-neutral-50 border-neutral-300 focus:border-amber-500 text-black'
                     }`}
                   />
+                  {errors.name && (
+                    <p className="text-xs text-red-500 font-mono mt-1">{errors.name.message}</p>
+                  )}
                 </div>
 
+                {/* ელფოსტა */}
                 <div className="space-y-2">
                   <label className="text-xs font-mono uppercase tracking-wider text-neutral-400">
                     {t.emailLabel}
                   </label>
                   <input
                     type="email"
-                    required
-                    value={formData.email}
+                    {...register('email')}
                     placeholder={t.emailPlaceholder}
-                    onInvalid={(e) => e.target.setCustomValidity(t.requiredError)}
-                    onInput={(e) => e.target.setCustomValidity('')}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className={`w-full px-4 py-3 rounded-sm border text-sm outline-none transition-colors ${
-                      isDark 
-                        ? 'bg-neutral-950 border-neutral-800 focus:border-amber-500 text-white' 
-                        : 'bg-neutral-50 border-neutral-300 focus:border-amber-500 text-black'
+                      errors.email 
+                        ? 'border-red-500 focus:border-red-500' 
+                        : isDark 
+                          ? 'bg-neutral-950 border-neutral-800 focus:border-amber-500 text-white' 
+                          : 'bg-neutral-50 border-neutral-300 focus:border-amber-500 text-black'
                     }`}
                   />
+                  {errors.email && (
+                    <p className="text-xs text-red-500 font-mono mt-1">{errors.email.message}</p>
+                  )}
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {/* სერვისი */}
                 <div className="space-y-2">
                   <label className="text-xs font-mono uppercase tracking-wider text-neutral-400">
                     {t.serviceLabel}
                   </label>
                   <select
-                    value={formData.service}
-                    onChange={(e) => setFormData({ ...formData, service: e.target.value })}
+                    {...register('service')}
                     className={`w-full px-4 py-3 rounded-sm border text-sm outline-none transition-colors ${
                       isDark 
                         ? 'bg-neutral-950 border-neutral-800 focus:border-amber-500 text-white' 
@@ -297,15 +305,15 @@ export const Contact = () => {
                   </select>
                 </div>
 
+                {/* რეგისტრაცია */}
                 <div className="space-y-2">
                   <label className="text-xs font-mono uppercase tracking-wider text-neutral-400">
                     {t.areaLabel}
                   </label>
                   <input
                     type="text"
-                    value={formData.area}
+                    {...register('area')}
                     placeholder={t.areaPlaceholder}
-                    onChange={(e) => setFormData({ ...formData, area: e.target.value })}
                     className={`w-full px-4 py-3 rounded-sm border text-sm outline-none transition-colors ${
                       isDark 
                         ? 'bg-neutral-950 border-neutral-800 focus:border-amber-500 text-white' 
@@ -315,26 +323,32 @@ export const Contact = () => {
                 </div>
               </div>
 
+              {/* მესიჯი */}
               <div className="space-y-2">
                 <label className="text-xs font-mono uppercase tracking-wider text-neutral-400">
                   {t.messageLabel}
                 </label>
                 <textarea
                   rows={4}
-                  value={formData.message}
+                  {...register('message')}
                   placeholder={t.messagePlaceholder}
-                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                   className={`w-full px-4 py-3 rounded-sm border text-sm outline-none transition-colors resize-none ${
-                    isDark 
-                      ? 'bg-neutral-950 border-neutral-800 focus:border-amber-500 text-white' 
-                      : 'bg-neutral-50 border-neutral-300 focus:border-amber-500 text-black'
+                    errors.message 
+                      ? 'border-red-500 focus:border-red-500' 
+                      : isDark 
+                        ? 'bg-neutral-950 border-neutral-800 focus:border-amber-500 text-white' 
+                        : 'bg-neutral-50 border-neutral-300 focus:border-amber-500 text-black'
                   }`}
                 />
+                {errors.message && (
+                  <p className="text-xs text-red-500 font-mono mt-1">{errors.message.message}</p>
+                )}
               </div>
 
               <button
                 type="submit"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-400 text-black font-bold px-8 py-3.5 text-xs uppercase tracking-[0.15em] transition-all rounded-sm shadow-lg shadow-amber-500/20"
+                disabled={isSubmitting}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-400 text-black font-bold px-8 py-3.5 text-xs uppercase tracking-[0.15em] transition-all rounded-sm shadow-lg shadow-amber-500/20 disabled:opacity-50"
               >
                 {t.submitBtn} <Send size={16} />
               </button>
