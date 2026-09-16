@@ -12,7 +12,7 @@ export const Footer = () => {
     }`}>
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10 pb-12 border-b border-neutral-800/60">
         
-        //ლოგო და აღწერა
+  {/* ლოგო და აღწერა */}
         <div className="space-y-4 md:col-span-1">
           <div className="flex items-center gap-3">
             <div className="relative w-8 h-8 border border-amber-500 flex items-center justify-center">
